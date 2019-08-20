@@ -1,0 +1,16 @@
+BAMDIR=/bicoh/MARGenomics/EGonzalez/Analisi/Aligned
+OUTDIR=/users/genomics/magda/Results_SingularityTest/Quantification
+ANNOTGENE=/projects_rg/MARGenomics/Annot_files_GTF
+
+############################################################################################
+############################################################################################
+#cd $OUTDIR
+#ls $BAMDIR/*bam > ./ListOfBam
+
+featureCounts -T 4 -t exon --largestOverlap -g gene_name -a $ANNOTGENE/gencode.vM17.primary_assembly.annotation.gtf -o $OUTDIR/CountsTable.txt \
+$BAMDIR/M_32059_CTGAAG.fastq.gzAligned.sortedByCoord.out.bam \
+$BAMDIR/O_32060_TAATGC.fastq.gzAligned.sortedByCoord.out.bam \
+$BAMDIR/P_32061_CGGCTA.fastq.gzAligned.sortedByCoord.out.bam \
+$BAMDIR/R_32062_TCCGCG.fastq.gzAligned.sortedByCoord.out.bam \
+$BAMDIR/T_32063_TCTCGC.fastq.gzAligned.sortedByCoord.out.bam \
+$BAMDIR/W_32064_AGCGAT.fastq.gzAligned.sortedByCoord.out.bam

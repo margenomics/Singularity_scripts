@@ -1,0 +1,28 @@
+FASTQDIR=/projects_rg/MARGenomics/20190114_POrtega_RNASeq_MTV3/Dades/Run1_Mouse/results
+ANNOTGENE=/projects_rg/MARGenomics/Annot_files_GTF
+GNMIDX=/projects_rg/MARGenomics/Index_Genomes_STAR/Idx_Gencode17_mm10_readlength75
+TARGETS=/bicoh/MARGenomics/Singularity_scripts/ReadMapping/TargetsGood
+ANALYSISDIR=/bicoh/MARGenomics/Singularity_scripts/ReadMapping
+OUTDIR=/users/genomics/magda/Results_SingularityTest/ReadMapping
+R1=_R1_001.fastq.gz
+R2=_R2_001.fastq.gz
+
+######################################################################################################
+#############################INSTRUCTIONS TO MAKE THE TARGETS#########################################
+#cd $FASTQDIR
+#ls -d "$PWD"/*fastq.gz > $ANALYSISDIR/Targets
+#cd $ANALYSISDIR
+#sed -ri 's/_R1_001\.fastq\.gz//' ./Targets
+#sed -ri 's/_R2_001\.fastq\.gz//' ./Targets
+#uniq ./Targets > ./TargetsGood
+
+######################################################################################################
+#####################################ALIGNMENT########################################################
+
+cat $TARGETS|while read line; do name=`basename $line`; STAR --runThreadN $SLURM_CPUS_PER_TASK --genomeDir $GNMIDX --readFilesIn $FASTQDIR/$name$R1 $FASTQDIR/$name$R2 --readFilesCommand zcat --outFileNamePrefix $OUTDIR/$name --outSAMattributes All --outSAMtype BAM SortedByCoordinate --outFilterType BySJout --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverLmax 0.08  --sjdbGTFfile $ANNOTGENE/gencode.vM17.primary_assembly.annotation.gtf; done
+
+#Inspeccionem el resultat dels alineaments
+for i in $OUTDIR/*.final.out; do basename $i >> $OUTDIR/TotalCounts_Alignment; grep "Number of input reads" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "Uniquely mapped reads" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "Average mapped length" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "reads mapped to too many loci" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "too many mismatches" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "too short" "$i" >> $OUTDIR/TotalCounts_Alignment; grep "other" "$i" >> $OUTDIR/TotalCounts_Alignment; done
+
+#Index files
+for e in $OUTDIR/*.bam;do samtools index $e; done

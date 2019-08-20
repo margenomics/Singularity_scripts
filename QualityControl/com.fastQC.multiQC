@@ -1,0 +1,17 @@
+#!/bin/bash
+#SBATCH -p long            # Partition to submit to
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu 10Gb           # Memory in MB
+#SBATCH -J QC           # job name
+#SBATCH -o /users/genomics/magda/QC.%j.out    # File to which standard out will be written
+#SBATCH -e /users/genomics/magda/QC.%j.err    # File to which standard err will be written
+
+module load singularity/3.2.0-foss-2016b
+
+FASTQ=/projects_rg/MARGenomics/20190114_POrtega_RNASeq_MTV3/Dades/Run1_Mouse/results
+FASTQC=/users/genomics/magda/Results_SingularityTest/QualityControl/FastQC
+MULTI=/users/genomics/magda/Results_SingularityTest/QualityControl/multiQC
+
+singularity exec -B /bicoh/MARGenomics:/bicoh/MARGenomics -B /projects_rg/MARGenomics:/projects_rg/MARGenomics /bicoh/MARGenomics/Singularity_images/fastqc/fastqc.img fastqc -t 6 -f fastq -o $FASTQC $FASTQ/*.fastq.gz
+
+singularity exec -B /bicoh/MARGenomics:/bicoh/MARGenomics -B /projects_rg/MARGenomics:/projects_rg/MARGenomics /bicoh/MARGenomics/Singularity_images/multiqc/multiqc.img multiqc -o $MULTI $FASTQC/*_fastqc.zip
