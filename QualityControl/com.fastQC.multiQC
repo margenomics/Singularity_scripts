@@ -6,6 +6,7 @@
 #SBATCH -o /users/genomics/magda/QC.%j.out    # File to which standard out will be written
 #SBATCH -e /users/genomics/magda/QC.%j.err    # File to which standard err will be written
 
+## Test for github
 module load singularity/3.2.0-foss-2016b
 
 FASTQ=/projects_rg/MARGenomics/20190114_POrtega_RNASeq_MTV3/Dades/Run1_Mouse/results
